@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import styles from 'styles.module.css';
-
+import styles from './Searchbar.module.css';
 
 class Searchbar extends Component {
   state = {
@@ -21,18 +20,20 @@ class Searchbar extends Component {
     return (
       <header className={styles.searchbar}>
         <form onSubmit={this.handleSubmit} className={styles.form}>
-          <button type="submit" className={styles.button}>
-            <span className={styles.buttonLabel}>Search</span>
-          </button>
-          <input
-            className={styles.input}
-            type="text"
-            autoComplete="off"
-            autoFocus
-            placeholder="Search images and photos"
-            value={this.state.query}
-            onChange={this.handleChange}
-          />
+          <div className={styles.inputContainer}>
+            <input
+              className={styles.input}
+              type="text"
+              autoComplete="off"
+              autoFocus
+              placeholder="Search images and photos"
+              value={this.state.query}
+              onChange={this.handleChange}
+            />
+            <button type="submit" className={styles.button}>
+              <span className={styles.buttonLabel}>Search</span>
+            </button>
+          </div>
         </form>
       </header>
     );
