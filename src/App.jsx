@@ -15,6 +15,7 @@ class App extends Component {
     largeImageUrl: '',
     showModal: false,
     isLoading: false,
+    hasMore: true,
   };
 
   componentDidUpdate(prevProps, prevState) {
@@ -28,6 +29,7 @@ class App extends Component {
       searchQuery: query,
       images: [],
       currentPage: 1,
+      hasMore: true,
     });
   };
 
@@ -41,8 +43,14 @@ class App extends Component {
         `https://pixabay.com/api/?q=${searchQuery}&page=${currentPage}&key=38138033-59618da37527b2e085afc0aca&image_type=photo&orientation=horizontal&per_page=12`
       )
       .then(response => {
+        const newImages = response.data.hits;
+        if (newImages.length === 0) {
+          this.setState({ hasMore: false });
+          return;
+        }
+
         this.setState(prevState => ({
-          images: [...prevState.images, ...response.data.hits],
+          images: [...prevState.images, ...newImages],
           currentPage: prevState.currentPage + 1,
         }));
       })
@@ -61,7 +69,7 @@ class App extends Component {
   };
 
   render() {
-    const { images, showModal, largeImageUrl, isLoading } = this.state;
+    const { images, showModal, largeImageUrl, isLoading, hasMore } = this.state;
 
     return (
       <div>
@@ -77,7 +85,7 @@ class App extends Component {
           ))}
         </ImageGallery>
         {isLoading && <Loader />}
-        {images.length > 0 && !isLoading && (
+        {images.length > 0 && !isLoading && hasMore && (
           <Button onClick={this.fetchImages}>Load more</Button>
         )}
         {showModal && (
