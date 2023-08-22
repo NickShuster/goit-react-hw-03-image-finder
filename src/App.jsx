@@ -33,32 +33,33 @@ class App extends Component {
     });
   };
 
-  fetchImages = () => {
-    const { searchQuery, currentPage } = this.state;
+ fetchImages = () => {
+  const { searchQuery, currentPage } = this.state;
 
-    this.setState({ isLoading: true });
+  this.setState({ isLoading: true });
 
-    axios
-      .get(
-        `https://pixabay.com/api/?q=${searchQuery}&page=${currentPage}&key=38138033-59618da37527b2e085afc0aca&image_type=photo&orientation=horizontal&per_page=12`
-      )
-      .then(response => {
-        const newImages = response.data.hits;
-        if (newImages.length === 0) {
-          this.setState({ hasMore: false });
-          return;
-        }
+  axios
+    .get(
+      `https://pixabay.com/api/?q=${searchQuery}&page=${currentPage}&key=38138033-59618da37527b2e085afc0aca&image_type=photo&orientation=horizontal&per_page=12`
+    )
+    .then(response => {
+      const newImages = response.data.hits;
+      const totalImages = response.data.totalHits;
 
-        this.setState(prevState => ({
-          images: [...prevState.images, ...newImages],
-          currentPage: prevState.currentPage + 1,
-        }));
-      })
-      .catch(error => console.log(error))
-      .finally(() => {
-        this.setState({ isLoading: false });
-      });
-  };
+      if (totalImages <= currentPage * 12) {
+        this.setState({ hasMore: false });
+      }
+
+      this.setState(prevState => ({
+        images: [...prevState.images, ...newImages],
+        currentPage: prevState.currentPage + 1,
+      }));
+    })
+    .catch(error => console.log(error))
+    .finally(() => {
+      this.setState({ isLoading: false });
+    });
+};
 
   openModal = largeImageUrl => {
     this.setState({ largeImageUrl, showModal: true });
@@ -85,7 +86,7 @@ class App extends Component {
           ))}
         </ImageGallery>
         {isLoading && <Loader />}
-        {images.length > 0 && !isLoading && hasMore && (
+        {!isLoading && images.length > 0 && hasMore && (
           <Button onClick={this.fetchImages}>Load more</Button>
         )}
         {showModal && (
